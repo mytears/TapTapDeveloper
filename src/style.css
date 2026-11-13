@@ -108,15 +108,16 @@ progress::-moz-progress-bar { background: #9ab977; }
 .scene-prop img { position: relative; }
 /* 캐릭터와 직접 상호작용하는 교체형 장비 슬롯 */
 .scene-prop[data-slot="chair"] { --x: 55.5%; --floor: 9%; --width: 19%; --depth: 1; }
-.scene-prop[data-slot="desk"] { --x: 46%; --floor: 6%; --width: 42%; --depth: 3; }
-.scene-prop[data-slot="keyboard"] { --x: 45.5%; --floor: 22.5%; --width: 15%; --depth: 4; }
-.scene-prop[data-slot="monitor"] { --x: 33.5%; --floor: 22%; --width: 17%; --depth: 6; }
-.scene-prop[data-slot="monitor"][data-gear="monitor"] { --x: 33.5%; --floor: 22%; --width: 19.5%; }
-.scene-prop[data-slot="monitor"][data-gear="mon-ultra"] { --x: 33.5%; --floor: 22%; --width: 19.5%; }
-.scene-prop[data-slot="mouse"] { --x: 55.5%; --floor: 21%; --width: 8%; --depth: 6; }
-.scene-prop[data-slot="drink"] { --x: 61%; --floor: 22.5%; --width: 5.5%; --depth: 6; }
-.scene-prop[data-slot="drink"][data-gear="drink-espresso"] { --x: 61.5%; --floor: 22.5%; --width: 7.5%; }
-.scene-prop[data-slot="ssd"] { --x: 34%; --floor: 18%; --width: 6.5%; --depth: 7; }
+.scene-prop[data-slot="desk"] { --x: 45.5%; --floor: 5.5%; --width: 48.5%; --depth: 3; }
+.scene-prop[data-slot="keyboard"] { --x: 46%; --floor: 22.5%; --width: 15%; --depth: 4; }
+.scene-prop[data-slot="monitor"] { --x: 35.5%; --floor: 23%; --width: 17%; --depth: 6; }
+.scene-prop[data-slot="monitor"][data-gear="monitor"] { --x: 35.5%; --floor: 23%; --width: 19%; }
+.scene-prop[data-slot="monitor"][data-gear="mon-ultra"] { --x: 35.5%; --floor: 23%; --width: 19%; }
+.scene-prop[data-slot="mouse"] { --x: 55%; --floor: 21.5%; --width: 8%; --depth: 6; }
+.scene-prop[data-slot="drink"] { --x: 60.5%; --floor: 23%; --width: 5.5%; --depth: 6; }
+.scene-prop[data-slot="drink"][data-gear="drink-energy"] { --x: 60.5%; --floor: 23%; --width: 4.5%; }
+.scene-prop[data-slot="drink"][data-gear="drink-espresso"] { --x: 60.5%; --floor: 23%; --width: 7.5%; }
+.scene-prop[data-slot="ssd"] { --x: 30%; --floor: 21.5%; --width: 6%; --depth: 7; }
 /* 작업실 주변에 배치되는 확장 장비 슬롯 */
 .scene-prop[data-slot="assistant"] { --x: 11%; --floor: 12%; --width: 9.5%; --depth: 4; }
 .scene-prop[data-slot="tools"] { --x: 18%; --floor: 5%; --width: 12.5%; --depth: 6; }
