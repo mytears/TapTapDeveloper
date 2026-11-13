@@ -6,7 +6,6 @@ import { icon } from './icons.js'
 import {
   buyItem,
   cancelSideMission,
-  claimTask,
   collectIdle,
   collectStudy,
   completeSideMission,
@@ -32,7 +31,7 @@ const storageKey = 'taptap-developer-v1'
 const number = new Intl.NumberFormat('ko-KR')
 const format = value => number.format(value)
 const art = file => `${import.meta.env.BASE_URL}art/${file}`
-const tabs = [['shop', 'bag', '상점'], ['career', 'flag', '커리어'], ['tasks', 'terminal', '의뢰']]
+const tabs = [['shop', 'bag', '상점'], ['career', 'flag', '커리어']]
 const typeNames = { xp: '탭당 숙련도', credit: '탭당 크레딧', auto: '초당 크레딧' }
 const slotNames = { chair: '의자 교체', desk: '책상 교체', keyboard: '키보드 교체', monitor: '모니터 교체', drink: '음료 교체' }
 let activeTab = 'shop'
@@ -180,18 +179,15 @@ function renderPanel(index) {
   const settings = {
     shop: ['장비 상점', `${format(state.credits)} 크레딧`],
     career: ['커리어', `${index + 1} / ${ranks.length}`],
-    tasks: ['개발 의뢰', `${state.claimed.length} / ${ranks.length}`],
   }
   const [title, count] = settings[activeTab]
   byId('panel-title').textContent = title
   byId('panel-count').textContent = count
-  const ready = ranks.map((_, i) => Number(state.xp >= goalFor(i))).join('')
-  const signature = [activeTab, index, state.owned.join(','), state.claimed.join(','), ready].join('|')
+  const signature = [activeTab, index, state.owned.join(',')].join('|')
   if (signature !== panelSignature) {
     panelSignature = signature
     if (activeTab === 'shop') panel.innerHTML = items.map(item => itemRow(item, index)).join('')
     if (activeTab === 'career') panel.innerHTML = ranks.map((rank, i) => rankRow(rank, i, index)).join('')
-    if (activeTab === 'tasks') panel.innerHTML = ranks.map(taskRow).join('')
   }
   for (const button of panel.querySelectorAll('[data-price]')) {
     button.classList.toggle('affordable', state.credits >= Number(button.dataset.price))
@@ -220,18 +216,8 @@ function rankRow(rank, index, current) {
   const area = scenes[rank.scene]
   return `<div class="list-row ${index === current ? 'current' : ''}">
     <span class="item-icon xp">${icon(index < current ? 'check' : 'up')}</span>
-    <div class="row-text"><strong>${rank.title} · ${area.name}</strong><small>숙련도 ${format(rank.xp)} · 10초마다 +${format(rank.studyXp)} XP</small></div>
+    <div class="row-text"><strong>${rank.title} · ${area.name}</strong><small>숙련도 ${format(rank.xp)} · 탭당 기본 +${format(rank.tapXp)} XP · 10초마다 +${format(rank.studyXp)} XP</small></div>
     <span class="row-tag">${index === current ? '현재 직급' : index < current ? '달성' : `LV.${String(index + 1).padStart(2, '0')}`}</span>
-  </div>`
-}
-
-function taskRow(rank, index) {
-  const claimed = state.claimed.includes(index)
-  const ready = state.xp >= goalFor(index)
-  return `<div class="list-row ${ready && !claimed ? 'current' : ''}">
-    <span class="item-icon credit">${icon(claimed ? 'check' : 'flag')}</span>
-    <div class="row-text"><strong>${rank.task}</strong><small>숙련도 ${format(goalFor(index))} · +${format(rank.reward)} 크레딧</small></div>
-    ${ready && !claimed ? `<button class="buy affordable" type="button" data-claim="${index}">받기</button>` : `<span class="row-tag">${claimed ? '완료' : '진행 중'}</span>`}
   </div>`
 }
 
@@ -262,7 +248,7 @@ function render() {
     scene.set(rank.scene, art(area.file))
     updateMusic()
   }
-  byId('next-rank').textContent = ranks[index + 1] ? `다음 직급 · ${ranks[index + 1].title}` : (state.claimed.includes(index) ? '통신 복구 완료' : '최종 의뢰')
+  byId('next-rank').textContent = ranks[index + 1] ? `다음 직급 · ${ranks[index + 1].title}` : (state.xp >= endingXp ? '최고 직급 마스터' : '최종 목표 · 지구 통신 복구')
   byId('rank-xp').textContent = `${format(state.xp)} / ${format(goal)} XP`
   byId('progress').value = percent
   byId('credits').textContent = format(state.credits)
@@ -276,8 +262,13 @@ function render() {
   byId('debug-rank').innerHTML = `${icon('up')} ${nextTitle ? '다음 직급' : (state.xp < endingXp ? '최종 XP' : '처음으로')}`
   scene.setGear(equippedFor(state), items)
   renderSideMission()
-  const pendingTasks = ranks.some((_, task) => state.xp >= goalFor(task) && !state.claimed.includes(task))
-  document.querySelector('[data-tab="tasks"]').classList.toggle('has-reward', pendingTasks)
+  if (state.xp >= endingXp && !state.claimed.includes(ranks.length - 1)) {
+    state.claimed.push(ranks.length - 1)
+    play('end')
+    menuDialog.close()
+    endingDialog.showModal()
+    save()
+  }
   if (menuDialog.open) renderPanel(index)
 }
 
@@ -401,7 +392,6 @@ document.querySelector('.menu').addEventListener('click', event => {
 })
 panel.addEventListener('click', event => {
   const buy = event.target.closest('[data-buy]')
-  const claim = event.target.closest('[data-claim]')
   if (buy) {
     collectIdle(state)
     const item = items.find(candidate => candidate.id === buy.dataset.buy)
@@ -411,17 +401,6 @@ panel.addEventListener('click', event => {
     }
     play('buy')
     toast(`${item.title} 장착 완료`)
-    save()
-    render()
-  }
-  if (claim && claimTask(state, Number(claim.dataset.claim))) {
-    const index = Number(claim.dataset.claim)
-    const ending = index === ranks.length - 1
-    play(ending ? 'end' : 'claim')
-    if (ending) {
-      menuDialog.close()
-      endingDialog.showModal()
-    } else toast(`의뢰 완료 · +${format(ranks[index].reward)} 크레딧`)
     save()
     render()
   }

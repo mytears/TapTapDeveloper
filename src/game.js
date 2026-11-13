@@ -1,16 +1,16 @@
 export const ranks = [
-  { title: '백수', xp: 0, scene: 0, studyXp: 1, task: '첫 번째 코드 실행하기', reward: 25 },
-  { title: '코딩 독학러', xp: 50, scene: 1, studyXp: 2, task: '깃허브에 포트폴리오 올리기', reward: 80 },
-  { title: '국비학원 수료생', xp: 180, scene: 2, studyXp: 4, task: '팀 프로젝트 발표 무사히 마치기', reward: 190 },
-  { title: '수습 인턴', xp: 520, scene: 3, studyXp: 8, task: '실서버 첫 버그 핫픽스하기', reward: 420 },
-  { title: '주니어 개발자', xp: 1350, scene: 4, studyXp: 15, task: '신규 서비스 첫 정식 배포하기', reward: 950 },
-  { title: '미들급 개발자', xp: 3200, scene: 5, studyXp: 28, task: '레거시 결제 모듈 리팩토링하기', reward: 2100 },
-  { title: '시니어 개발자', xp: 7200, scene: 6, studyXp: 52, task: '새벽 대규모 트래픽 장애 복구하기', reward: 4600 },
-  { title: '테크 리드', xp: 15500, scene: 7, studyXp: 95, task: '글로벌 마이크로서비스 전환하기', reward: 9800 },
-  { title: '수석 아키텍트', xp: 32000, scene: 8, studyXp: 175, task: '차세대 클라우드 코어 설계하기', reward: 21000 },
-  { title: 'CTO', xp: 65000, scene: 9, studyXp: 320, task: '유니콘 기술 상장(IPO) 리드하기', reward: 45000 },
-  { title: 'AI 연구소장', xp: 130000, scene: 10, studyXp: 600, task: '초거대 자율형 AI 모델 깨우기', reward: 95000 },
-  { title: '우주해커', xp: 250000, scene: 11, studyXp: 1200, task: '지구와 저궤도 정거장 통신 복구하기', reward: 200000 },
+  { title: '백수', xp: 0, scene: 0, tapXp: 1, studyXp: 1, task: '첫 번째 코드 실행하기', reward: 25 },
+  { title: '코딩 독학러', xp: 50, scene: 1, tapXp: 2, studyXp: 2, task: '깃허브에 포트폴리오 올리기', reward: 80 },
+  { title: '국비학원 수료생', xp: 180, scene: 2, tapXp: 4, studyXp: 4, task: '팀 프로젝트 발표 무사히 마치기', reward: 190 },
+  { title: '수습 인턴', xp: 520, scene: 3, tapXp: 8, studyXp: 8, task: '실서버 첫 버그 핫픽스하기', reward: 420 },
+  { title: '주니어 개발자', xp: 1350, scene: 4, tapXp: 15, studyXp: 15, task: '신규 서비스 첫 정식 배포하기', reward: 950 },
+  { title: '미들급 개발자', xp: 3200, scene: 5, tapXp: 28, studyXp: 28, task: '레거시 결제 모듈 리팩토링하기', reward: 2100 },
+  { title: '시니어 개발자', xp: 7200, scene: 6, tapXp: 52, studyXp: 52, task: '새벽 대규모 트래픽 장애 복구하기', reward: 4600 },
+  { title: '테크 리드', xp: 15500, scene: 7, tapXp: 95, studyXp: 95, task: '글로벌 마이크로서비스 전환하기', reward: 9800 },
+  { title: '수석 아키텍트', xp: 32000, scene: 8, tapXp: 175, studyXp: 175, task: '차세대 클라우드 코어 설계하기', reward: 21000 },
+  { title: 'CTO', xp: 65000, scene: 9, tapXp: 320, studyXp: 320, task: '유니콘 기술 상장(IPO) 리드하기', reward: 45000 },
+  { title: 'AI 연구소장', xp: 130000, scene: 10, tapXp: 600, studyXp: 600, task: '초거대 자율형 AI 모델 깨우기', reward: 95000 },
+  { title: '우주해커', xp: 250000, scene: 11, tapXp: 1200, studyXp: 1200, task: '지구와 저궤도 정거장 통신 복구하기', reward: 200000 },
 ]
 
 export const endingXp = 380000
@@ -224,8 +224,13 @@ export function studyXpFor(rankIndex) {
   return ranks[rankIndex]?.studyXp ?? 1
 }
 
+export function tapXpFor(rankIndex) {
+  return ranks[rankIndex]?.tapXp ?? 1
+}
+
 export function statsFor(state) {
-  const stats = { xp: 1, credit: 1, auto: 0 }
+  const index = rankOf(state.xp)
+  const stats = { xp: tapXpFor(index), credit: 1, auto: 0 }
   for (const item of items) {
     if (state.owned.includes(item.id)) stats[item.type] += item.power
   }
