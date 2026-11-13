@@ -1,22 +1,93 @@
 export const ranks = [
-  { title: '백수', xp: 0, scene: 0, task: '첫 번째 코드 실행하기', reward: 20 },
-  { title: '코딩 독학러', xp: 50, scene: 0, task: '포트폴리오 올리기', reward: 90 },
-  { title: '인턴', xp: 240, scene: 1, task: '첫 버그 수정하기', reward: 220 },
-  { title: '주니어 개발자', xp: 800, scene: 1, task: '서비스 첫 배포하기', reward: 560 },
-  { title: '시니어 개발자', xp: 2400, scene: 2, task: '새벽 장애 복구하기', reward: 1500 },
-  { title: '테크 리드', xp: 6500, scene: 2, task: '위성 제어 시스템 완성하기', reward: 3600 },
-  { title: '궤도 시스템 엔지니어', xp: 15000, scene: 3, task: '정거장 방화벽 수리하기', reward: 7800 },
-  { title: '우주해커', xp: 32000, scene: 3, task: '지구와 정거장 통신 복구하기', reward: 15000 },
+  { title: '백수', xp: 0, scene: 0, studyXp: 1, task: '첫 번째 코드 실행하기', reward: 25 },
+  { title: '코딩 독학러', xp: 50, scene: 1, studyXp: 2, task: '깃허브에 포트폴리오 올리기', reward: 80 },
+  { title: '국비학원 수료생', xp: 180, scene: 2, studyXp: 4, task: '팀 프로젝트 발표 무사히 마치기', reward: 190 },
+  { title: '수습 인턴', xp: 520, scene: 3, studyXp: 8, task: '실서버 첫 버그 핫픽스하기', reward: 420 },
+  { title: '주니어 개발자', xp: 1350, scene: 4, studyXp: 15, task: '신규 서비스 첫 정식 배포하기', reward: 950 },
+  { title: '미들급 개발자', xp: 3200, scene: 5, studyXp: 28, task: '레거시 결제 모듈 리팩토링하기', reward: 2100 },
+  { title: '시니어 개발자', xp: 7200, scene: 6, studyXp: 52, task: '새벽 대규모 트래픽 장애 복구하기', reward: 4600 },
+  { title: '테크 리드', xp: 15500, scene: 7, studyXp: 95, task: '글로벌 마이크로서비스 전환하기', reward: 9800 },
+  { title: '수석 아키텍트', xp: 32000, scene: 8, studyXp: 175, task: '차세대 클라우드 코어 설계하기', reward: 21000 },
+  { title: 'CTO', xp: 65000, scene: 9, studyXp: 320, task: '유니콘 기술 상장(IPO) 리드하기', reward: 45000 },
+  { title: 'AI 연구소장', xp: 130000, scene: 10, studyXp: 600, task: '초거대 자율형 AI 모델 깨우기', reward: 95000 },
+  { title: '우주해커', xp: 250000, scene: 11, studyXp: 1200, task: '지구와 저궤도 정거장 통신 복구하기', reward: 200000 },
 ]
 
-export const endingXp = 42000
+export const endingXp = 380000
 export const offlineLimit = 4 * 60 * 60
 export const studyInterval = 10000
 export const scenes = [
-  { name: '나의 원룸', file: 'room-detailed.webp' },
-  { name: '개발팀 사무실', file: 'office-detailed.webp' },
-  { name: '중앙 서버실', file: 'server-detailed.webp' },
-  { name: '궤도 정거장', file: 'orbit-detailed.webp' },
+  { name: '반지하 단칸방', file: 'bg-shabby.webp' },
+  { name: '좁은 고시원 방', file: 'bg-gosiwon.webp' },
+  { name: '달빛 옥탑방 원룸', file: 'room-detailed.webp' },
+  { name: '창고형 초기 스타트업', file: 'bg-garage.webp' },
+  { name: '개발팀 일반 사무실', file: 'office-detailed.webp' },
+  { name: '공유오피스 라운지', file: 'bg-lounge.webp' },
+  { name: '판교 테크밸리 사옥', file: 'bg-pangyo.webp' },
+  { name: '중앙 데이터 서버실', file: 'server-detailed.webp' },
+  { name: '고층 코너 임원실', file: 'bg-executive.webp' },
+  { name: '한강뷰 펜트하우스 서재', file: 'bg-penthouse.webp' },
+  { name: '초거대 양자 AI 연구소', file: 'bg-ailab.webp' },
+  { name: '저궤도 우주 정거장', file: 'orbit-detailed.webp' },
+]
+
+export const sideMissions = [
+  {
+    id: 'risky-site',
+    title: '약간은 위험해 보이는 사이트 만들기',
+    desc: '수상한 의뢰인이 다크모드 전용 비밀 커뮤니티 제작을 요청했습니다.',
+    creditMult: 16,
+    xpMult: 14,
+  },
+  {
+    id: 'promo-site',
+    title: '간단한 홍보 사이트 만들기',
+    desc: '동네 수제버거 사장님이 내일 오픈이라며 원페이지 랜딩을 부탁했습니다.',
+    creditMult: 13,
+    xpMult: 12,
+  },
+  {
+    id: 'killing-time-game',
+    title: '킬링타임용 게임 만들기',
+    desc: '출퇴근길에 한 손으로 탭해서 즐길 수 있는 중독성 미니게임을 만듭니다.',
+    creditMult: 15,
+    xpMult: 15,
+  },
+  {
+    id: 'wedding-card',
+    title: '모바일 청첩장 긴급 제작',
+    desc: '주말 결혼식인데 청첩장 링크가 깨졌다는 친구의 다급한 SOS입니다.',
+    creditMult: 12,
+    xpMult: 13,
+  },
+  {
+    id: 'goods-bot',
+    title: '한정판 굿즈 재고 알림 봇 만들기',
+    desc: '품절 대란 피규어가 재입고되면 0.1초 만에 알려주는 알림 봇입니다.',
+    creditMult: 14,
+    xpMult: 14,
+  },
+  {
+    id: 'viral-test',
+    title: '바이럴 밈 성향 테스트 만들기',
+    desc: 'SNS에서 폭발적으로 공유될 개발자 유형 심리테스트 웹앱을 제작합니다.',
+    creditMult: 15,
+    xpMult: 13,
+  },
+  {
+    id: 'legacy-mall',
+    title: '10년 된 레거시 쇼핑몰 심폐소생',
+    desc: '익스플로러에서만 돌아가던 전설의 쇼핑몰 결제창을 최신 웹으로 고칩니다.',
+    creditMult: 18,
+    xpMult: 16,
+  },
+  {
+    id: 'kimchi-chart',
+    title: '실시간 시세 전광판 사이트 만들기',
+    desc: '전 세계 거래소 시세 차이를 한눈에 비교하는 초고속 대시보드를 구축합니다.',
+    creditMult: 17,
+    xpMult: 15,
+  },
 ]
 
 export const defaultEquipped = {
@@ -33,40 +104,44 @@ export const legacyItemMap = {
 }
 
 export const items = [
-  // 백수 (Rank 0)
+  // 0. 백수 (반지하 단칸방)
   { id: 'kb-membrane', title: '멤브레인 키보드', price: 15, rank: 0, type: 'xp', power: 1, slot: 'keyboard', tier: 1 },
   { id: 'coffee', title: '아이스 아메리카노', price: 35, rank: 0, type: 'xp', power: 2, slot: 'drink', tier: 1 },
-  // 코딩 독학러 (Rank 1)
-  { id: 'chair-ergo', title: '인체공학 메쉬 의자', price: 70, rank: 1, type: 'xp', power: 3, slot: 'chair', tier: 1, file: 'chair' },
-  { id: 'mon-single', title: 'FHD 코딩 모니터', price: 115, rank: 1, type: 'credit', power: 3, slot: 'monitor', tier: 1 },
-  { id: 'mouse-ergo', title: '버티컬 무선 마우스', price: 170, rank: 1, type: 'credit', power: 4, slot: 'mouse', tier: 1 },
-  // 인턴 (Rank 2)
-  { id: 'kb-mech', title: 'RGB 기계식 키보드', price: 240, rank: 2, type: 'xp', power: 6, slot: 'keyboard', tier: 2 },
-  { id: 'mon-dual', title: '듀얼 모니터', price: 340, rank: 2, type: 'credit', power: 6, slot: 'monitor', tier: 2, file: 'monitor' },
-  { id: 'ssd', title: '고속 외장 SSD', price: 460, rank: 2, type: 'xp', power: 8, slot: 'ssd', tier: 1 },
-  { id: 'server', title: '미니 빌드 서버', price: 620, rank: 2, type: 'auto', power: 4, slot: 'server', tier: 1 },
-  // 주니어 개발자 (Rank 3)
-  { id: 'chair-gaming', title: '프로 게이밍 의자', price: 820, rank: 3, type: 'xp', power: 12, slot: 'chair', tier: 2 },
-  { id: 'drink-energy', title: '고카페인 에너지 드링크', price: 1050, rank: 3, type: 'xp', power: 14, slot: 'drink', tier: 2 },
-  { id: 'tools', title: '하드웨어 디버깅 킷', price: 1350, rank: 3, type: 'credit', power: 12, slot: 'tools', tier: 1 },
-  { id: 'assistant', title: 'AI 코딩 로봇', price: 1750, rank: 3, type: 'xp', power: 20, slot: 'assistant', tier: 1 },
-  // 시니어 개발자 (Rank 4)
-  { id: 'kb-custom', title: '무접점 커스텀 키보드', price: 2300, rank: 4, type: 'xp', power: 28, slot: 'keyboard', tier: 3, file: 'keyboard' },
-  { id: 'mon-ultra', title: '울트라와이드 커브드 모니터', price: 2900, rank: 4, type: 'credit', power: 22, slot: 'monitor', tier: 3 },
-  { id: 'desk-modern', title: '모션 데스크', price: 3600, rank: 4, type: 'credit', power: 26, slot: 'desk', tier: 1 },
-  { id: 'cluster', title: '서버 클러스터', price: 4500, rank: 4, type: 'auto', power: 18, slot: 'cluster', tier: 1 },
-  // 테크 리드 (Rank 5)
-  { id: 'chair-boss', title: '천연가죽 회장님 의자', price: 5800, rank: 5, type: 'xp', power: 48, slot: 'chair', tier: 3 },
-  { id: 'drink-espresso', title: '전자동 에스프레소 머신', price: 7200, rank: 5, type: 'xp', power: 55, slot: 'drink', tier: 3 },
-  { id: 'server-nas', title: '4베이 고속 NAS 스토리지', price: 8800, rank: 5, type: 'auto', power: 36, slot: 'nas', tier: 1 },
-  { id: 'link', title: '위성 업링크 안테나', price: 10500, rank: 5, type: 'credit', power: 45, slot: 'link', tier: 1 },
-  // 궤도 시스템 엔지니어 (Rank 6)
-  { id: 'kb-laser', title: '홀로그램 무접점 레이저 키보드', price: 12500, rank: 6, type: 'xp', power: 95, slot: 'keyboard', tier: 4 },
-  { id: 'mon-holo', title: '공간 홀로그램 디스플레이', price: 14500, rank: 6, type: 'credit', power: 75, slot: 'monitor', tier: 4 },
-  { id: 'chair-zerog', title: '무중력 궤도 포드 의자', price: 17000, rank: 6, type: 'xp', power: 120, slot: 'chair', tier: 4 },
-  { id: 'quantum', title: '양자 컴파일러', price: 19500, rank: 6, type: 'xp', power: 140, slot: 'quantum', tier: 1 },
-  // 우주해커 (Rank 7)
-  { id: 'core', title: '궤도 AI 코어', price: 24000, rank: 7, type: 'auto', power: 120, slot: 'core', tier: 1 },
+  // 1. 코딩 독학러 (좁은 고시원 방)
+  { id: 'chair-ergo', title: '인체공학 메쉬 의자', price: 75, rank: 1, type: 'xp', power: 3, slot: 'chair', tier: 1, file: 'chair' },
+  { id: 'mon-single', title: 'FHD 코딩 모니터', price: 120, rank: 1, type: 'credit', power: 3, slot: 'monitor', tier: 1 },
+  // 2. 국비학원 수료생 (달빛 옥탑방 원룸)
+  { id: 'mouse-ergo', title: '버티컬 무선 마우스', price: 190, rank: 2, type: 'credit', power: 5, slot: 'mouse', tier: 1 },
+  { id: 'kb-mech', title: 'RGB 기계식 키보드', price: 280, rank: 2, type: 'xp', power: 7, slot: 'keyboard', tier: 2 },
+  // 3. 수습 인턴 (창고형 초기 스타트업)
+  { id: 'mon-dual', title: '듀얼 모니터', price: 420, rank: 3, type: 'credit', power: 9, slot: 'monitor', tier: 2, file: 'monitor' },
+  { id: 'ssd', title: '고속 외장 SSD', price: 580, rank: 3, type: 'xp', power: 11, slot: 'ssd', tier: 1 },
+  // 4. 주니어 개발자 (개발팀 일반 사무실)
+  { id: 'server', title: '미니 빌드 서버', price: 820, rank: 4, type: 'auto', power: 8, slot: 'server', tier: 1 },
+  { id: 'chair-gaming', title: '프로 게이밍 의자', price: 1100, rank: 4, type: 'xp', power: 18, slot: 'chair', tier: 2 },
+  { id: 'drink-energy', title: '고카페인 에너지 드링크', price: 1450, rank: 4, type: 'xp', power: 22, slot: 'drink', tier: 2 },
+  // 5. 미들급 개발자 (공유오피스 라운지)
+  { id: 'tools', title: '하드웨어 디버깅 킷', price: 1950, rank: 5, type: 'credit', power: 24, slot: 'tools', tier: 1 },
+  { id: 'assistant', title: 'AI 코딩 로봇', price: 2600, rank: 5, type: 'xp', power: 35, slot: 'assistant', tier: 1 },
+  // 6. 시니어 개발자 (판교 테크밸리 사옥)
+  { id: 'kb-custom', title: '무접점 커스텀 키보드', price: 3600, rank: 6, type: 'xp', power: 50, slot: 'keyboard', tier: 3, file: 'keyboard' },
+  { id: 'mon-ultra', title: '울트라와이드 커브드 모니터', price: 4800, rank: 6, type: 'credit', power: 45, slot: 'monitor', tier: 3 },
+  // 7. 테크 리드 (중앙 데이터 서버실)
+  { id: 'desk-modern', title: '모션 데스크', price: 6500, rank: 7, type: 'credit', power: 65, slot: 'desk', tier: 1 },
+  { id: 'cluster', title: '서버 클러스터', price: 8800, rank: 7, type: 'auto', power: 45, slot: 'cluster', tier: 1 },
+  // 8. 수석 아키텍트 (고층 코너 임원실)
+  { id: 'chair-boss', title: '천연가죽 회장님 의자', price: 12500, rank: 8, type: 'xp', power: 110, slot: 'chair', tier: 3 },
+  { id: 'drink-espresso', title: '전자동 에스프레소 머신', price: 16500, rank: 8, type: 'xp', power: 140, slot: 'drink', tier: 3 },
+  // 9. CTO (한강뷰 펜트하우스 서재)
+  { id: 'server-nas', title: '4베이 고속 NAS 스토리지', price: 23000, rank: 9, type: 'auto', power: 120, slot: 'nas', tier: 1 },
+  { id: 'link', title: '위성 업링크 안테나', price: 32000, rank: 9, type: 'credit', power: 180, slot: 'link', tier: 1 },
+  // 10. AI 연구소장 (초거대 양자 AI 연구소)
+  { id: 'kb-laser', title: '홀로그램 무접점 레이저 키보드', price: 46000, rank: 10, type: 'xp', power: 280, slot: 'keyboard', tier: 4 },
+  { id: 'mon-holo', title: '공간 홀로그램 디스플레이', price: 62000, rank: 10, type: 'credit', power: 260, slot: 'monitor', tier: 4 },
+  { id: 'chair-zerog', title: '무중력 궤도 포드 의자', price: 82000, rank: 10, type: 'xp', power: 360, slot: 'chair', tier: 4 },
+  // 11. 우주해커 (저궤도 우주 정거장)
+  { id: 'quantum', title: '양자 컴파일러', price: 115000, rank: 11, type: 'xp', power: 550, slot: 'quantum', tier: 1 },
+  { id: 'core', title: '궤도 AI 코어', price: 160000, rank: 11, type: 'auto', power: 450, slot: 'core', tier: 1 },
 ]
 
 export function spriteFor(itemOrId) {
@@ -87,7 +162,19 @@ export function equippedFor(state) {
 }
 
 export function newGame(now = Date.now()) {
-  return { xp: 0, credits: 0, taps: 0, studyMs: 0, owned: [], claimed: [], sound: true, music: false, vibration: true, savedAt: now }
+  return {
+    xp: 0,
+    credits: 0,
+    taps: 0,
+    studyMs: 0,
+    owned: [],
+    claimed: [],
+    activeMission: null,
+    sound: true,
+    music: false,
+    vibration: true,
+    savedAt: now,
+  }
 }
 
 export function restoreGame(raw, now = Date.now()) {
@@ -106,7 +193,21 @@ export function restoreGame(raw, now = Date.now()) {
     const migrated = raw.owned.map(id => legacyItemMap[id] ?? id)
     state.owned = items.filter(item => migrated.includes(item.id)).map(item => item.id)
   }
-  if (Array.isArray(raw.claimed)) state.claimed = ranks.map((_, index) => index).filter(index => raw.claimed.includes(index) && state.xp >= goalFor(index))
+  if (Array.isArray(raw.claimed)) {
+    state.claimed = ranks.map((_, index) => index).filter(index => raw.claimed.includes(index) && state.xp >= goalFor(index))
+  }
+  if (raw.activeMission && typeof raw.activeMission === 'object') {
+    const found = sideMissions.find(m => m.id === raw.activeMission.id)
+    if (found && Number.isSafeInteger(raw.activeMission.credits) && Number.isSafeInteger(raw.activeMission.xp)) {
+      state.activeMission = {
+        id: found.id,
+        title: found.title,
+        desc: found.desc,
+        credits: raw.activeMission.credits,
+        xp: raw.activeMission.xp,
+      }
+    }
+  }
   return state
 }
 
@@ -119,12 +220,48 @@ export function goalFor(rankIndex) {
   return ranks[rankIndex + 1]?.xp ?? endingXp
 }
 
+export function studyXpFor(rankIndex) {
+  return ranks[rankIndex]?.studyXp ?? 1
+}
+
 export function statsFor(state) {
   const stats = { xp: 1, credit: 1, auto: 0 }
   for (const item of items) {
     if (state.owned.includes(item.id)) stats[item.type] += item.power
   }
   return stats
+}
+
+export function rollSideMission(state, excludeId) {
+  const index = rankOf(state.xp)
+  const stats = statsFor(state)
+  const pool = sideMissions.filter(m => m.id !== excludeId)
+  const picked = pool[Math.floor(Math.random() * pool.length)] ?? sideMissions[0]
+  const baseCredit = Math.max(stats.credit * picked.creditMult, Math.round(ranks[index].reward * 0.45))
+  const baseXp = Math.max(stats.xp * picked.xpMult, studyXpFor(index) * 4)
+  state.activeMission = {
+    id: picked.id,
+    title: picked.title,
+    desc: picked.desc,
+    credits: baseCredit,
+    xp: baseXp,
+  }
+  return state.activeMission
+}
+
+export function completeSideMission(state) {
+  if (!state.activeMission) return null
+  const completed = state.activeMission
+  state.credits += completed.credits
+  state.xp += completed.xp
+  state.activeMission = null
+  return completed
+}
+
+export function cancelSideMission(state) {
+  if (!state.activeMission) return false
+  state.activeMission = null
+  return true
 }
 
 export function buyItem(state, id) {
@@ -154,8 +291,10 @@ export function collectIdle(state, now = Date.now()) {
 
 export function collectStudy(state, elapsedMs) {
   const total = state.studyMs + elapsedMs
-  const xp = Math.floor(total / studyInterval)
+  const ticks = Math.floor(total / studyInterval)
   state.studyMs = total % studyInterval
+  if (ticks < 1) return 0
+  const xp = ticks * studyXpFor(rankOf(state.xp))
   state.xp += xp
   return xp
 }

@@ -13,11 +13,11 @@
   --mono: "IBM Plex Mono", Consolas, monospace;
 }
 
-* { box-sizing: border-box; }
-body { margin: 0; min-width: 0; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; min-width: 0; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 body:has(dialog[open]) { overflow: hidden; }
 button, input { font: inherit; }
-button { cursor: pointer; touch-action: manipulation; color: inherit; }
+button { cursor: pointer; touch-action: manipulation; color: inherit; -webkit-tap-highlight-color: transparent; }
 button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid #65528a; outline-offset: 3px; }
 h1, h2, p { margin: 0; }
 svg { width: 19px; height: 19px; display: inline-block; vertical-align: middle; flex: none; }
@@ -139,6 +139,86 @@ progress::-moz-progress-bar { background: #9ab977; }
 .float-xp { position: absolute; z-index: 9; pointer-events: none; color: #fffceb; font: 700 16px var(--mono); white-space: nowrap; text-shadow: 1px 2px #3b3040, -1px 1px #3b3040; animation: rise 640ms steps(10, end) forwards; }
 .study-xp { color: #dcffbb; }
 @keyframes rise { from { transform: translate(-50%, 0); } to { transform: translate(-50%, -35px); opacity: 0; } }
+
+.side-mission {
+  margin-top: 11px;
+  padding: 11px 12px;
+  border: 2px solid #8a643b;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fff5dc 0%, #faebd0 100%);
+  box-shadow: 0 2px 0 #d5be98;
+}
+.side-mission-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+.mission-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #6c4324;
+  color: #fff8ea;
+  font-size: 10px;
+  font-weight: 800;
+}
+.mission-badge svg { width: 12px; height: 12px; color: #ffd470; }
+.mission-reward {
+  font: 700 11px var(--mono);
+  color: #6d471d;
+}
+.mission-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: -.035em;
+  color: #362517;
+}
+.mission-desc {
+  margin-top: 3px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: #635142;
+}
+.side-mission-actions {
+  display: flex;
+  gap: 7px;
+  margin-top: 9px;
+}
+.mission-ad-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 36px;
+  padding: 5px 10px;
+  border: 1.5px solid #48683a;
+  border-bottom-width: 3px;
+  border-radius: 5px;
+  background: #cbe8ae;
+  color: #23381b;
+  font-size: 12px;
+  font-weight: 800;
+}
+.mission-ad-btn:hover { background: #d5f0ba; }
+.mission-ad-btn svg { width: 14px; height: 14px; fill: currentColor; }
+.mission-cancel-btn {
+  min-height: 36px;
+  padding: 5px 11px;
+  border: 1px solid #b5a18b;
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: #f5ece0;
+  color: #65564a;
+  font-size: 12px;
+  font-weight: 750;
+}
+.mission-cancel-btn:hover { background: #eadfce; }
 
 .passive { min-height: 36px; font-size: 11px; color: var(--muted); }
 .study { display: flex; align-items: center; gap: 4px; }

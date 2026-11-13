@@ -25,6 +25,7 @@ const paths = {
   lock: 'M6 10h12v11H6zm3 0V7a3 3 0 1 1 6 0v3',
   check: 'm5 12 4 4L19 6',
   layers: 'm12 3 9 5-9 5-9-5zm-9 9 9 5 9-5M3 16l9 5 9-5',
+  play: 'M6 4l14 8-14 8V4z',
 }
 
 export function icon(name) {

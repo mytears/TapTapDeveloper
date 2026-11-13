@@ -3,7 +3,28 @@ import '@fontsource/ibm-plex-mono/latin-400.css'
 import '@fontsource/ibm-plex-mono/latin-700.css'
 import './style.css'
 import { icon } from './icons.js'
-import { buyItem, claimTask, collectIdle, collectStudy, endingXp, equippedFor, goalFor, items, newGame, rankOf, ranks, restoreGame, scenes, spriteFor, statsFor, studyInterval } from './game.js'
+import {
+  buyItem,
+  cancelSideMission,
+  claimTask,
+  collectIdle,
+  collectStudy,
+  completeSideMission,
+  endingXp,
+  equippedFor,
+  goalFor,
+  items,
+  newGame,
+  rankOf,
+  ranks,
+  restoreGame,
+  rollSideMission,
+  scenes,
+  spriteFor,
+  statsFor,
+  studyInterval,
+  studyXpFor,
+} from './game.js'
 import { setMusic, sound } from './audio.js'
 import { createScene } from './scene.js'
 
@@ -24,11 +45,21 @@ try {
 }
 const welcomeCredits = collectIdle(state)
 
+// 추후 Google AdSense / AdMob 보상형 광고 SDK 연동 지점
+// 현재 테스트 단계에서는 광고 보기 클릭 시 즉시 성공(true)으로 처리합니다.
+async function watchRewardedAd() {
+  if (typeof window.showGoogleRewardedAd === 'function') {
+    return Boolean(await window.showGoogleRewardedAd())
+  }
+  return true
+}
+
 document.querySelector('#app').innerHTML = `
   <header class="topbar">
     <h1><img src="${import.meta.env.BASE_URL}icon.png" alt="">탭탭 개발자</h1>
     <div class="header-actions">
       <span id="save-status" role="status" hidden>저장 불가</span>
+      <button class="debug-button" id="debug-mission" type="button" title="디버그: 돌발 외주 미션 즉시 발생">${icon('bolt')} 돌발 미션</button>
       <button class="debug-button" id="debug-rank" type="button" title="디버그: 다음 커리어로 승급 및 테스트 크레딧 지급">${icon('up')} 다음 직급</button>
       <button class="icon-button" id="sound" type="button" aria-label="효과음" aria-pressed="true">${icon('sound')}</button>
       <button class="icon-button" id="settings" type="button" aria-label="설정" aria-haspopup="dialog">${icon('gear')}</button>
@@ -56,8 +87,20 @@ document.querySelector('#app').innerHTML = `
         <span id="scene-name" class="location"></span>
         <div class="scene-gear" role="group" aria-label="작업실에 배치한 장비"></div>
       </div>
+      <aside id="side-mission" class="side-mission" aria-live="polite" hidden>
+        <div class="side-mission-head">
+          <span class="mission-badge">${icon('bolt')} 돌발 외주 미션</span>
+          <span id="mission-reward" class="mission-reward"></span>
+        </div>
+        <strong id="mission-title" class="mission-title"></strong>
+        <p id="mission-desc" class="mission-desc"></p>
+        <div class="side-mission-actions">
+          <button type="button" id="mission-ad" class="mission-ad-btn">${icon('play')} 광고 보기 (즉시 완료)</button>
+          <button type="button" id="mission-cancel" class="mission-cancel-btn">의뢰 취소</button>
+        </div>
+      </aside>
       <div class="passive">
-        <span class="study">${icon('clock')} 10초마다 +1 XP <span class="study-time" id="study-time" aria-hidden="true"></span></span>
+        <span class="study">${icon('clock')} <span id="study-rate">10초마다 +1 XP</span> <span class="study-time" id="study-time" aria-hidden="true"></span></span>
         <span id="auto-credit" hidden></span>
       </div>
       <button class="tap-button" id="tap" type="button">
@@ -86,7 +129,7 @@ document.querySelector('#app').innerHTML = `
   <dialog id="ending-dialog" aria-labelledby="ending-title">
     <div class="ending-icon">${icon('antenna')}</div>
     <h2 id="ending-title">지구, 들리나요?</h2>
-    <p>통신이 복구됐어요. 낡은 노트북으로 첫 코드를 실행하던 개발자는 이제 우주 정거장을 지키는 우주해커가 됐습니다.</p>
+    <p>통신이 복구됐어요. 눅눅한 반지하 단칸방에서 CRT 모니터로 첫 코드를 치던 개발자는 이제 우주 정거장을 지키는 우주해커가 됐습니다.</p>
     <form method="dialog"><button class="primary-small" type="submit">작업실로 돌아가기</button></form>
   </dialog>`
 
@@ -101,6 +144,8 @@ let lastRank
 let panelSignature
 let unlockedAudio = false
 let saveTimer
+let tapsSinceMission = 0
+let nextMissionTapTarget = 6
 let lastStudyTime = document.hidden ? undefined : Math.floor(performance.now())
 
 function save() {
@@ -128,7 +173,7 @@ function toast(message) {
 }
 
 function updateMusic() {
-  setMusic(unlockedAudio && state.music && !document.hidden, ranks[rankOf(state.xp)].scene === 3)
+  setMusic(unlockedAudio && state.music && !document.hidden, ranks[rankOf(state.xp)].scene >= 10)
 }
 
 function renderPanel(index) {
@@ -172,9 +217,10 @@ function itemRow(item, index) {
 }
 
 function rankRow(rank, index, current) {
+  const area = scenes[rank.scene]
   return `<div class="list-row ${index === current ? 'current' : ''}">
     <span class="item-icon xp">${icon(index < current ? 'check' : 'up')}</span>
-    <div class="row-text"><strong>${rank.title}</strong><small>숙련도 ${format(rank.xp)}</small></div>
+    <div class="row-text"><strong>${rank.title} · ${area.name}</strong><small>숙련도 ${format(rank.xp)} · 10초마다 +${format(rank.studyXp)} XP</small></div>
     <span class="row-tag">${index === current ? '현재 직급' : index < current ? '달성' : `LV.${String(index + 1).padStart(2, '0')}`}</span>
   </div>`
 }
@@ -187,6 +233,19 @@ function taskRow(rank, index) {
     <div class="row-text"><strong>${rank.task}</strong><small>숙련도 ${format(goalFor(index))} · +${format(rank.reward)} 크레딧</small></div>
     ${ready && !claimed ? `<button class="buy affordable" type="button" data-claim="${index}">받기</button>` : `<span class="row-tag">${claimed ? '완료' : '진행 중'}</span>`}
   </div>`
+}
+
+function renderSideMission() {
+  const box = byId('side-mission')
+  const mission = state.activeMission
+  if (!mission) {
+    box.hidden = true
+    return
+  }
+  box.hidden = false
+  byId('mission-title').textContent = mission.title
+  byId('mission-desc').textContent = mission.desc
+  byId('mission-reward').textContent = `+${format(mission.credits)} 크레딧 · +${format(mission.xp)} XP`
 }
 
 function render() {
@@ -207,6 +266,7 @@ function render() {
   byId('rank-xp').textContent = `${format(state.xp)} / ${format(goal)} XP`
   byId('progress').value = percent
   byId('credits').textContent = format(state.credits)
+  byId('study-rate').textContent = `10초마다 +${format(studyXpFor(index))} XP`
   byId('auto-credit').hidden = !stats.auto
   byId('auto-credit').textContent = `+${format(stats.auto)} 크레딧/초`
   byId('tap-yield').textContent = `+${format(stats.credit)} 크레딧 · +${format(stats.xp)} 숙련도`
@@ -215,6 +275,7 @@ function render() {
   const nextTitle = ranks[index + 1]?.title
   byId('debug-rank').innerHTML = `${icon('up')} ${nextTitle ? '다음 직급' : (state.xp < endingXp ? '최종 XP' : '처음으로')}`
   scene.setGear(equippedFor(state), items)
+  renderSideMission()
   const pendingTasks = ranks.some((_, task) => state.xp >= goalFor(task) && !state.claimed.includes(task))
   document.querySelector('[data-tab="tasks"]').classList.toggle('has-reward', pendingTasks)
   if (menuDialog.open) renderPanel(index)
@@ -224,6 +285,17 @@ function play(name) {
   unlockedAudio = true
   if (state.sound) sound(name)
   updateMusic()
+}
+
+function spawnSideMission(force = false) {
+  if (state.activeMission && !force) return
+  const prevId = state.activeMission?.id
+  const mission = rollSideMission(state, prevId)
+  tapsSinceMission = 0
+  nextMissionTapTarget = 12 + Math.floor(Math.random() * 7)
+  toast(`돌발 외주 도착: ${mission.title}`)
+  save()
+  render()
 }
 
 function tap(event) {
@@ -241,6 +313,14 @@ function tap(event) {
   scene.tap(x, y, `+${format(stats.xp)} XP`)
   play(after === before ? 'tap' : 'rank')
   if (state.vibration) navigator.vibrate?.(12)
+  if (!state.activeMission) {
+    tapsSinceMission += 1
+    if (tapsSinceMission >= nextMissionTapTarget) {
+      rollSideMission(state)
+      tapsSinceMission = 0
+      nextMissionTapTarget = 12 + Math.floor(Math.random() * 7)
+    }
+  }
   if (after > before) {
     announceRank(after)
     save()
@@ -251,7 +331,7 @@ function tap(event) {
 }
 
 function announceRank(index) {
-  toast(`승급! ${ranks[index].title}`)
+  toast(`승급! ${ranks[index].title} (${scenes[ranks[index].scene].name})`)
   scene.promote()
 }
 
@@ -273,6 +353,38 @@ function updateStudy() {
 
 byId('tap').addEventListener('click', tap)
 byId('viewport').addEventListener('click', tap)
+byId('mission-ad').addEventListener('click', async () => {
+  if (!state.activeMission) return
+  const watched = await watchRewardedAd()
+  if (!watched) {
+    toast('광고 시청이 취소되었습니다.')
+    return
+  }
+  const before = rankOf(state.xp)
+  const done = completeSideMission(state)
+  if (!done) return
+  const after = rankOf(state.xp)
+  scene.gain(50, 42, `+${format(done.xp)} XP`, 'study-xp')
+  play(after > before ? 'rank' : 'claim')
+  if (after > before) {
+    announceRank(after)
+  } else {
+    toast(`외주 성공! +${format(done.credits)} 크레딧 · +${format(done.xp)} XP`)
+  }
+  save()
+  render()
+})
+byId('mission-cancel').addEventListener('click', () => {
+  if (!cancelSideMission(state)) return
+  tapsSinceMission = 0
+  toast('외주 의뢰를 취소했습니다.')
+  save()
+  render()
+})
+byId('debug-mission').addEventListener('click', () => {
+  play('claim')
+  spawnSideMission(true)
+})
 document.addEventListener('keydown', event => {
   if (event.code !== 'Space' || event.repeat || event.target !== document.body || document.querySelector('dialog[open]')) return
   event.preventDefault()
@@ -324,7 +436,7 @@ byId('debug-rank').addEventListener('click', () => {
     announceRank(nextIndex)
   } else if (state.xp < endingXp) {
     state.xp = endingXp
-    state.credits += 50000
+    state.credits += 150000
     play('rank')
     toast('디버그: 최종 의뢰 달성 XP!')
   } else {
