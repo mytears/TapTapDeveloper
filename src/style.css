@@ -109,7 +109,7 @@ progress::-moz-progress-bar { background: #9ab977; }
 /* 캐릭터와 직접 상호작용하는 교체형 장비 슬롯 */
 .scene-prop[data-slot="chair"] { --x: 55.5%; --floor: 9%; --width: 19%; --depth: 1; }
 .scene-prop[data-slot="desk"] { --x: 46%; --floor: 6%; --width: 42%; --depth: 3; }
-.scene-prop[data-slot="keyboard"] { --x: 45.5%; --floor: 23.5%; --width: 15%; --depth: 4; }
+.scene-prop[data-slot="keyboard"] { --x: 45.5%; --floor: 22.5%; --width: 15%; --depth: 4; }
 .scene-prop[data-slot="monitor"] { --x: 33.5%; --floor: 22%; --width: 17%; --depth: 6; }
 .scene-prop[data-slot="monitor"][data-gear="monitor"] { --x: 33.5%; --floor: 22%; --width: 19.5%; }
 .scene-prop[data-slot="monitor"][data-gear="mon-ultra"] { --x: 33.5%; --floor: 22%; --width: 19.5%; }
