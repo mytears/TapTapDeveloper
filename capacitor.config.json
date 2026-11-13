@@ -1,0 +1,12 @@
+{
+  "appId": "com.taptapdeveloper.game",
+  "appName": "탭탭 개발자",
+  "webDir": "dist",
+  "android": {
+    "backgroundColor": "#15111D",
+    "adjustMarginsForEdgeToEdge": "auto"
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
