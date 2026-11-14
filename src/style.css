@@ -31,6 +31,7 @@ svg { width: 19px; height: 19px; display: inline-block; vertical-align: middle; 
   margin: auto;
   background: var(--paper);
   border-inline: 1px solid var(--line);
+  touch-action: manipulation;
 }
 .topbar {
   display: flex;
@@ -80,8 +81,8 @@ progress::-moz-progress-bar { background: #9ab977; }
 .scene-character {
   position: absolute;
   width: 24%;
-  bottom: 9%;
-  left: 50%;
+  bottom: 18.5%;
+  left: 54%;
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -105,19 +106,27 @@ progress::-moz-progress-bar { background: #9ab977; }
 }
 .scene-gear { position: absolute; inset: 0; pointer-events: none; }
 .scene-prop { position: absolute; left: var(--x); bottom: var(--floor); width: var(--width); transform: translateX(-50%); z-index: var(--depth, 1); }
-.scene-prop img { position: relative; }
+.scene-prop img { position: relative; height: auto; image-rendering: auto; }
 /* 캐릭터와 직접 상호작용하는 교체형 장비 슬롯 */
-.scene-prop[data-slot="chair"] { --x: 55.5%; --floor: 9%; --width: 19%; --depth: 1; }
-.scene-prop[data-slot="desk"] { --x: 45.5%; --floor: 5.5%; --width: 48.5%; --depth: 3; }
-.scene-prop[data-slot="keyboard"] { --x: 46%; --floor: 22.5%; --width: 15%; --depth: 4; }
-.scene-prop[data-slot="monitor"] { --x: 35.5%; --floor: 23%; --width: 17%; --depth: 6; }
-.scene-prop[data-slot="monitor"][data-gear="monitor"] { --x: 35.5%; --floor: 23%; --width: 19%; }
-.scene-prop[data-slot="monitor"][data-gear="mon-ultra"] { --x: 35.5%; --floor: 23%; --width: 19%; }
-.scene-prop[data-slot="mouse"] { --x: 55%; --floor: 21.5%; --width: 8%; --depth: 6; }
-.scene-prop[data-slot="drink"] { --x: 60.5%; --floor: 23%; --width: 5.5%; --depth: 6; }
-.scene-prop[data-slot="drink"][data-gear="drink-energy"] { --x: 60.5%; --floor: 23%; --width: 4.5%; }
-.scene-prop[data-slot="drink"][data-gear="drink-espresso"] { --x: 60.5%; --floor: 23%; --width: 7.5%; }
-.scene-prop[data-slot="ssd"] { --x: 30%; --floor: 21.5%; --width: 6%; --depth: 7; }
+.scene-prop[data-slot="chair"] { --x: 59.5%; --floor: 18.5%; --width: 20.5%; --depth: 1; }
+.scene-prop[data-slot="chair"][data-gear="chair-gaming"] { --width: 23%; }
+.scene-prop[data-slot="chair"][data-gear="chair-boss"] { --width: 24%; }
+.scene-prop[data-slot="chair"][data-gear="chair-zerog"] { --width: 24.5%; }
+.scene-prop[data-slot="desk"] { --x: 45.5%; --floor: 0.5%; --width: 60%; --depth: 3; }
+.scene-prop[data-slot="keyboard"] { --x: 49.5%; --floor: 31.5%; --width: 14%; --depth: 4; }
+.scene-prop[data-slot="monitor"] { --x: 36.5%; --floor: 28%; --width: 21%; --depth: 6; }
+.scene-prop[data-slot="monitor"][data-gear="monitor"] { --width: 25%; }
+.scene-prop[data-slot="monitor"][data-gear="mon-ultra"] { --width: 26%; }
+.scene-prop[data-slot="monitor"][data-gear="mon-holo"] { --width: 25%; }
+.scene-prop[data-slot="mouse"] { --x: 57%; --floor: 32%; --width: 5%; --depth: 6; }
+.scene-prop[data-slot="drink"] { --x: 55.5%; --floor: 22.5%; --width: 3.6%; --depth: 6; }
+.scene-prop[data-slot="drink"][data-gear="drink-energy"] { --width: 2.8%; }
+.scene-prop[data-slot="drink"][data-gear="drink-espresso"] { --width: 6%; }
+.scene-prop[data-slot="ssd"] { --x: 36.5%; --floor: 28%; --width: 4%; --depth: 7; }
+.scene-prop[data-slot="lamp"] { --x: 69.5%; --floor: 36%; --width: 9%; --depth: 6; }
+.scene-prop[data-slot="books"] { --x: 62.5%; --floor: 27%; --width: 7.5%; --depth: 7; }
+.scene-prop[data-slot="network"] { --x: 8%; --floor: 23%; --width: 11%; --depth: 3; }
+.scene-prop[data-slot="power"] { --x: 65%; --floor: 3%; --width: 8%; --depth: 2; }
 /* 작업실 주변에 배치되는 확장 장비 슬롯 */
 .scene-prop[data-slot="assistant"] { --x: 11%; --floor: 12%; --width: 9.5%; --depth: 4; }
 .scene-prop[data-slot="tools"] { --x: 18%; --floor: 5%; --width: 12.5%; --depth: 6; }
@@ -142,19 +151,11 @@ progress::-moz-progress-bar { background: #9ab977; }
 @keyframes rise { from { transform: translate(-50%, 0); } to { transform: translate(-50%, -35px); opacity: 0; } }
 
 .side-mission {
-  margin-top: 11px;
-  padding: 11px 12px;
+  padding: 18px;
   border: 2px solid #8a643b;
   border-radius: 6px;
   background: linear-gradient(180deg, #fff5dc 0%, #faebd0 100%);
   box-shadow: 0 2px 0 #d5be98;
-}
-.side-mission-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  margin-bottom: 5px;
 }
 .mission-badge {
   display: inline-flex;
@@ -169,26 +170,29 @@ progress::-moz-progress-bar { background: #9ab977; }
 }
 .mission-badge svg { width: 12px; height: 12px; color: #ffd470; }
 .mission-reward {
-  font: 700 11px var(--mono);
+  margin-top: 12px;
+  font: 700 13px var(--mono);
   color: #6d471d;
 }
 .mission-title {
-  display: block;
-  font-size: 14px;
+  margin-top: 10px;
+  font-size: 19px;
   font-weight: 850;
   letter-spacing: -.035em;
   color: #362517;
 }
 .mission-desc {
-  margin-top: 3px;
-  font-size: 11.5px;
-  line-height: 1.4;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.5;
   color: #635142;
 }
+#mission-feedback { margin-top: 8px; color: #943d2c; font-size: 12px; }
+#mission-feedback:empty { display: none; }
 .side-mission-actions {
   display: flex;
   gap: 7px;
-  margin-top: 9px;
+  margin-top: 14px;
 }
 .mission-ad-btn {
   flex: 1;
@@ -196,7 +200,7 @@ progress::-moz-progress-bar { background: #9ab977; }
   align-items: center;
   justify-content: center;
   gap: 5px;
-  min-height: 36px;
+  min-height: 44px;
   padding: 5px 10px;
   border: 1.5px solid #48683a;
   border-bottom-width: 3px;
@@ -207,9 +211,10 @@ progress::-moz-progress-bar { background: #9ab977; }
   font-weight: 800;
 }
 .mission-ad-btn:hover { background: #d5f0ba; }
+.mission-ad-btn:disabled { cursor: wait; opacity: .6; }
 .mission-ad-btn svg { width: 14px; height: 14px; fill: currentColor; }
 .mission-cancel-btn {
-  min-height: 36px;
+  min-height: 44px;
   padding: 5px 11px;
   border: 1px solid #b5a18b;
   border-bottom-width: 2px;
@@ -221,30 +226,12 @@ progress::-moz-progress-bar { background: #9ab977; }
 }
 .mission-cancel-btn:hover { background: #eadfce; }
 
+.tap-hint { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 8px; padding-top: 9px; font-size: 12px; color: var(--muted); }
+.tap-hint strong { color: var(--ink); }
 .passive { min-height: 36px; font-size: 11px; color: var(--muted); }
 .study { display: flex; align-items: center; gap: 4px; }
 .study svg { width: 13px; height: 13px; }
 .study-time { margin-left: 2px; min-width: 25px; font: 700 11px var(--mono); color: #4f6242; }
-.tap-button {
-  display: flex;
-  width: 100%;
-  min-height: 66px;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  background: var(--green);
-  color: #263920;
-  border: 2px solid #4d6840;
-  border-bottom-width: 5px;
-  border-radius: 6px;
-  font-weight: 850;
-  font-size: 21px;
-  letter-spacing: -.045em;
-}
-.tap-button svg { width: 24px; height: 24px; }
-.tap-button small { display: block; margin-top: 3px; font-size: 11px; letter-spacing: 0; color: var(--green-dark); font-weight: 650; }
-.tap-button:hover { background: #d0ebb7; }
-.tap-button:active { transform: translateY(2px); }
 .menu { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 12px; }
 .menu button { position: relative; display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; padding: 4px; border: 1px solid #b9a9a0; border-bottom-width: 2px; border-radius: 5px; background: #f9f0e0; font-size: 13px; font-weight: 750; }
 .menu button:hover { background: #efe4d1; }

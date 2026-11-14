@@ -24,6 +24,11 @@ export function createScene(view, background, art) {
       background.src = src
     },
     setGear(equipped, items) {
+      for (const [slot, entry] of slotElements) {
+        if (equipped[slot]) continue
+        entry.prop.remove()
+        slotElements.delete(slot)
+      }
       for (const [slot, spriteId] of Object.entries(equipped)) {
         if (!spriteId) continue
         let entry = slotElements.get(slot)

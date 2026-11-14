@@ -4,6 +4,7 @@ import '@fontsource/ibm-plex-mono/latin-700.css'
 import './style.css'
 import { icon } from './icons.js'
 import {
+  advanceSideMission,
   buyItem,
   cancelSideMission,
   collectIdle,
@@ -33,7 +34,7 @@ const format = value => number.format(value)
 const art = file => `${import.meta.env.BASE_URL}art/${file}`
 const tabs = [['shop', 'bag', '상점'], ['career', 'flag', '커리어']]
 const typeNames = { xp: '탭당 숙련도', credit: '탭당 크레딧', auto: '초당 크레딧' }
-const slotNames = { chair: '의자 교체', desk: '책상 교체', keyboard: '키보드 교체', monitor: '모니터 교체', drink: '음료 교체' }
+const slotNames = { chair: '의자 교체', desk: '책상 교체', keyboard: '키보드 교체', monitor: '모니터 교체', drink: '음료 교체', lamp: '조명 교체', network: '네트워크 교체', nas: '스토리지 교체', server: '서버 교체' }
 let activeTab = 'shop'
 let storageAvailable = true
 let state
@@ -53,7 +54,8 @@ async function watchRewardedAd() {
   return true
 }
 
-document.querySelector('#app').innerHTML = `
+const app = document.querySelector('#app')
+app.innerHTML = `
   <header class="topbar">
     <h1><img src="${import.meta.env.BASE_URL}icon.png" alt="">탭탭 개발자</h1>
     <div class="header-actions">
@@ -74,7 +76,7 @@ document.querySelector('#app').innerHTML = `
         <div class="progress-caption"><span id="next-rank"></span><span id="rank-xp"></span></div>
         <progress id="progress" aria-label="승급 숙련도" max="100" value="0"></progress>
       </div>
-      <div class="viewport" id="viewport">
+      <div class="viewport" id="viewport" role="button" tabindex="0" aria-label="작업실에서 코딩" aria-describedby="scene-name tap-yield">
         <img id="scene-image" class="scene-background" alt="" fetchpriority="high">
         <div class="scene-character scene-character-legs">
           <img src="${art('char-legs.webp')}" alt="" draggable="false">
@@ -86,31 +88,28 @@ document.querySelector('#app').innerHTML = `
         <span id="scene-name" class="location"></span>
         <div class="scene-gear" role="group" aria-label="작업실에 배치한 장비"></div>
       </div>
-      <aside id="side-mission" class="side-mission" aria-live="polite" hidden>
-        <div class="side-mission-head">
-          <span class="mission-badge">${icon('bolt')} 돌발 외주 미션</span>
-          <span id="mission-reward" class="mission-reward"></span>
-        </div>
-        <strong id="mission-title" class="mission-title"></strong>
-        <p id="mission-desc" class="mission-desc"></p>
-        <div class="side-mission-actions">
-          <button type="button" id="mission-ad" class="mission-ad-btn">${icon('play')} 광고 보기 (즉시 완료)</button>
-          <button type="button" id="mission-cancel" class="mission-cancel-btn">의뢰 취소</button>
-        </div>
-      </aside>
+      <p class="tap-hint"><strong>화면을 터치해 코딩</strong><span id="tap-yield"></span></p>
       <div class="passive">
         <span class="study">${icon('clock')} <span id="study-rate">10초마다 +1 XP</span> <span class="study-time" id="study-time" aria-hidden="true"></span></span>
         <span id="auto-credit" hidden></span>
       </div>
-      <button class="tap-button" id="tap" type="button">
-        ${icon('code')} <span>코딩하기<small id="tap-yield"></small></span>
-      </button>
     </section>
     <nav class="menu" aria-label="성장 메뉴">
       ${tabs.map(([id, glyph, title]) => `<button type="button" data-tab="${id}" aria-haspopup="dialog">${icon(glyph)} <span>${title}</span></button>`).join('')}
     </nav>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <dialog id="mission-dialog" class="side-mission" aria-labelledby="mission-label mission-title" aria-describedby="mission-desc mission-reward">
+    <span class="mission-badge" id="mission-label">${icon('bolt')} 돌발 외주 미션</span>
+    <h2 id="mission-title" class="mission-title"></h2>
+    <p id="mission-desc" class="mission-desc"></p>
+    <p id="mission-reward" class="mission-reward"></p>
+    <p id="mission-feedback" role="status"></p>
+    <div class="side-mission-actions">
+      <button type="button" id="mission-ad" class="mission-ad-btn">${icon('play')} 광고 보기 (즉시 완료)</button>
+      <button type="button" id="mission-cancel" class="mission-cancel-btn" autofocus>의뢰 취소</button>
+    </div>
+  </dialog>
   <dialog id="menu-dialog" class="menu-dialog" aria-labelledby="panel-title">
     <div class="dialog-top">
       <h2 id="panel-title"></h2><span id="panel-count"></span>
@@ -133,8 +132,11 @@ document.querySelector('#app').innerHTML = `
   </dialog>`
 
 const byId = id => document.getElementById(id)
-const scene = createScene(byId('viewport'), byId('scene-image'), art)
+const viewport = byId('viewport')
+const scene = createScene(viewport, byId('scene-image'), art)
 const panel = byId('panel-list')
+const missionDialog = byId('mission-dialog')
+const missionAd = byId('mission-ad')
 const menuDialog = byId('menu-dialog')
 const settingsDialog = byId('settings-dialog')
 const endingDialog = byId('ending-dialog')
@@ -143,8 +145,7 @@ let lastRank
 let panelSignature
 let unlockedAudio = false
 let saveTimer
-let tapsSinceMission = 0
-let nextMissionTapTarget = 6
+let watchingMission
 let lastStudyTime = document.hidden ? undefined : Math.floor(performance.now())
 
 function save() {
@@ -222,16 +223,18 @@ function rankRow(rank, index, current) {
 }
 
 function renderSideMission() {
-  const box = byId('side-mission')
   const mission = state.activeMission
   if (!mission) {
-    box.hidden = true
+    missionDialog.close()
     return
   }
-  box.hidden = false
+  if (document.querySelector('dialog[open]')) return
   byId('mission-title').textContent = mission.title
   byId('mission-desc').textContent = mission.desc
   byId('mission-reward').textContent = `+${format(mission.credits)} 크레딧 · +${format(mission.xp)} XP`
+  byId('mission-feedback').textContent = ''
+  missionAd.disabled = watchingMission === mission
+  missionDialog.showModal()
 }
 
 function render() {
@@ -261,14 +264,15 @@ function render() {
   const nextTitle = ranks[index + 1]?.title
   byId('debug-rank').innerHTML = `${icon('up')} ${nextTitle ? '다음 직급' : (state.xp < endingXp ? '최종 XP' : '처음으로')}`
   scene.setGear(equippedFor(state), items)
-  renderSideMission()
   if (state.xp >= endingXp && !state.claimed.includes(ranks.length - 1)) {
     state.claimed.push(ranks.length - 1)
     play('end')
     menuDialog.close()
+    missionDialog.close()
     endingDialog.showModal()
     save()
   }
+  renderSideMission()
   if (menuDialog.open) renderPanel(index)
 }
 
@@ -276,17 +280,6 @@ function play(name) {
   unlockedAudio = true
   if (state.sound) sound(name)
   updateMusic()
-}
-
-function spawnSideMission(force = false) {
-  if (state.activeMission && !force) return
-  const prevId = state.activeMission?.id
-  const mission = rollSideMission(state, prevId)
-  tapsSinceMission = 0
-  nextMissionTapTarget = 12 + Math.floor(Math.random() * 7)
-  toast(`돌발 외주 도착: ${mission.title}`)
-  save()
-  render()
 }
 
 function tap(event) {
@@ -297,23 +290,19 @@ function tap(event) {
   state.xp += stats.xp
   state.credits += stats.credit
   const after = rankOf(state.xp)
-  const clickedScene = event.currentTarget === byId('viewport') && event.detail > 0
-  const rect = byId('viewport').getBoundingClientRect()
-  const x = clickedScene ? Math.max(17, Math.min(83, (event.clientX - rect.left) / rect.width * 100)) : 44 + state.taps % 5 * 3
-  const y = clickedScene ? Math.max(23, (event.clientY - rect.top) / rect.height * 100) : 63
+  let x = 44 + state.taps % 5 * 3
+  let y = 63
+  if (event.detail > 0 && viewport.contains(event.target)) {
+    const rect = viewport.getBoundingClientRect()
+    x = Math.max(17, Math.min(83, (event.clientX - rect.left) / rect.width * 100))
+    y = Math.max(23, (event.clientY - rect.top) / rect.height * 100)
+  }
   scene.tap(x, y, `+${format(stats.xp)} XP`)
   play(after === before ? 'tap' : 'rank')
   if (state.vibration) navigator.vibrate?.(12)
-  if (!state.activeMission) {
-    tapsSinceMission += 1
-    if (tapsSinceMission >= nextMissionTapTarget) {
-      rollSideMission(state)
-      tapsSinceMission = 0
-      nextMissionTapTarget = 12 + Math.floor(Math.random() * 7)
-    }
-  }
-  if (after > before) {
-    announceRank(after)
+  const mission = advanceSideMission(state)
+  if (after > before) announceRank(after)
+  if (mission || after > before) {
     save()
   } else if (!saveTimer) {
     saveTimer = setTimeout(save, 500)
@@ -342,18 +331,34 @@ function updateStudy() {
   return xp
 }
 
-byId('tap').addEventListener('click', tap)
-byId('viewport').addEventListener('click', tap)
-byId('mission-ad').addEventListener('click', async () => {
-  if (!state.activeMission) return
-  const watched = await watchRewardedAd()
+app.addEventListener('click', event => {
+  if (event.target.closest('button, input, label, dialog') || document.querySelector('dialog[open]')) return
+  tap(event)
+})
+missionAd.addEventListener('click', async () => {
+  const mission = state.activeMission
+  if (!mission || watchingMission === mission) return
+  watchingMission = mission
+  missionAd.disabled = true
+  const feedback = byId('mission-feedback')
+  feedback.textContent = ''
+  let watched
+  try {
+    watched = await watchRewardedAd()
+  } catch {
+    if (state.activeMission === mission) feedback.textContent = '광고를 불러오지 못했습니다. 다시 시도해 주세요.'
+    return
+  } finally {
+    if (watchingMission === mission) watchingMission = undefined
+    if (state.activeMission === mission) missionAd.disabled = false
+  }
+  if (state.activeMission !== mission) return
   if (!watched) {
-    toast('광고 시청이 취소되었습니다.')
+    feedback.textContent = '광고 시청이 취소되었습니다.'
     return
   }
   const before = rankOf(state.xp)
   const done = completeSideMission(state)
-  if (!done) return
   const after = rankOf(state.xp)
   scene.gain(50, 42, `+${format(done.xp)} XP`, 'study-xp')
   play(after > before ? 'rank' : 'claim')
@@ -365,22 +370,34 @@ byId('mission-ad').addEventListener('click', async () => {
   save()
   render()
 })
-byId('mission-cancel').addEventListener('click', () => {
+function declineMission() {
   if (!cancelSideMission(state)) return
-  tapsSinceMission = 0
   toast('외주 의뢰를 취소했습니다.')
   save()
   render()
+}
+
+byId('mission-cancel').addEventListener('click', declineMission)
+missionDialog.addEventListener('cancel', event => {
+  event.preventDefault()
+  declineMission()
 })
 byId('debug-mission').addEventListener('click', () => {
   play('claim')
-  spawnSideMission(true)
+  rollSideMission(state)
+  save()
+  render()
 })
 document.addEventListener('keydown', event => {
-  if (event.code !== 'Space' || event.repeat || event.target !== document.body || document.querySelector('dialog[open]')) return
+  const isViewportKey = event.target === viewport && (event.code === 'Space' || event.key === 'Enter')
+  const isBodyShortcut = event.target === document.body && event.code === 'Space'
+  if ((!isViewportKey && !isBodyShortcut) || document.querySelector('dialog[open]')) return
   event.preventDefault()
-  tap(event)
+  if (!event.repeat) tap(event)
 })
+for (const dialog of [menuDialog, settingsDialog, endingDialog]) {
+  dialog.addEventListener('close', renderSideMission)
+}
 document.querySelector('.menu').addEventListener('click', event => {
   const button = event.target.closest('[data-tab]')
   if (!button) return
